@@ -94,8 +94,8 @@
           </div>
         </div>
         <div class="row mt-12">
-          <div class="row" v-if="filteredDatas.length > 0">
-            <div class="mb-8 md:col-6" v-for="data in filteredDatas" :key="data.id">
+          <div class="row" v-if="paginatedData.length > 0">
+            <div class="mb-8 md:col-6" v-for="data in paginatedData" :key="data.id">
               <div class="rounded-xl bg-white p-5 shadow-lg lg:p-10">
                 <h3 class="h4">{{ data.name }}</h3>
                 <p class="mt-6">{{ data.detail }}</p>
@@ -135,6 +135,19 @@
             </div>
           </div>
         </div>
+        <div class="pagination">
+
+        </div>
+        <div class="flex items-center justify-center mt-10">
+          <nav class="inline-flex items-center space-x-1" aria-label="Pagination">
+            <!-- Previous -->
+            <button @click="prevPage" :disabled="currentPage === 1"
+              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-100">Prev</button>
+            <span> {{ currentPage }} of {{ totalPages }}</span>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-100">Next</button>
+          </nav>
+        </div>
       </div>
     </section>
   </main>
@@ -145,21 +158,38 @@ import { computed, inject, ref } from 'vue';
 
 const search = ref('')
 const selectedCategory = ref('All')
+const datas = inject('datas')
+
+const itemsPerPage = 6
+const currentPage = ref(1)
+
+const totalPages = computed(() => Math.ceil(Object.values(datas).length / itemsPerPage))
+
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return Object.values(datas).slice(start, start + itemsPerPage)
+})
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
 
 const handleClickDelete = () => {
   search.value = ''
 }
 
-const datas = inject('datas')
-
-const filteredDatas = computed(() => {
-  const keyword = search.value.toLowerCase()
-  return Object.values(datas).filter(item => {
-    const matchKeyword = item.name.toLowerCase().includes(keyword) || item.location.toLowerCase().includes(keyword)
-    const matchCategory = selectedCategory.value === 'All' || item.category === selectedCategory.value
-    return matchKeyword && matchCategory
-  })
-})
+// const filteredDatas = computed(() => {
+//   const keyword = search.value.toLowerCase()
+//   return Object.values(datas).filter(item => {
+//     const matchKeyword = item.name.toLowerCase().includes(keyword) || item.location.toLowerCase().includes(keyword)
+//     const matchCategory = selectedCategory.value === 'All' || item.category === selectedCategory.value
+//     return matchKeyword && matchCategory
+//   })
+// })
 
 const clickFilter = (category) => {
   selectedCategory.value = category
