@@ -1,0 +1,13 @@
+@use "./base";
+@use "./modules/components";
+@use "./modules/buttons";
+@use "./modules/navigation";
+@use "./modules/utilities";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {}
+
+@layer components {}
