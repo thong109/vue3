@@ -135,18 +135,24 @@
             </div>
           </div>
         </div>
-        <div class="pagination">
+        <div class="flex justify-center mt-6 space-x-2">
+          <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100" :disabled="currentPage === 1"
+            @click="currentPage--">
+            ←
+          </button>
 
-        </div>
-        <div class="flex items-center justify-center mt-10">
-          <nav class="inline-flex items-center space-x-1" aria-label="Pagination">
-            <!-- Previous -->
-            <button @click="prevPage" :disabled="currentPage === 1"
-              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-100">Prev</button>
-            <span> {{ currentPage }} of {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages"
-              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-100">Next</button>
-          </nav>
+          <button v-for="page in totalPages" :key="page" @click="currentPage = page" class="px-3 py-1 rounded-md border"
+            :class="{
+              'bg-blue-500 text-white border-blue-500': currentPage === page,
+              'hover:bg-gray-100 border-gray-300': currentPage !== page
+            }">
+            {{ page }}
+          </button>
+
+          <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
+            :disabled="currentPage === totalPages" @click="currentPage++">
+            →
+          </button>
         </div>
       </div>
     </section>
@@ -160,36 +166,32 @@ const search = ref('')
 const selectedCategory = ref('All')
 const datas = inject('datas')
 
-const itemsPerPage = 6
 const currentPage = ref(1)
-
-const totalPages = computed(() => Math.ceil(Object.values(datas).length / itemsPerPage))
+const itemsPerPage = 6
 
 const paginatedData = computed(() => {
+  const keyword = search.value.toLowerCase()
+
+  const filtered = Object.values(datas).filter(item => {
+    const matchKeyword = item.name.toLowerCase().includes(keyword) || item.location.toLowerCase().includes(keyword)
+    const matchCategory = selectedCategory.value === 'All' || item.category === selectedCategory.value
+    return matchKeyword && matchCategory
+  })
+
+  totalFiltered.value = filtered.length
+
   const start = (currentPage.value - 1) * itemsPerPage
-  return Object.values(datas).slice(start, start + itemsPerPage)
+  const end = start + itemsPerPage
+
+  return filtered.slice(start, end)
 })
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--
-}
+const totalFiltered = ref(0)
+const totalPages = computed(() => Math.ceil(totalFiltered.value / itemsPerPage))
 
 const handleClickDelete = () => {
   search.value = ''
 }
-
-// const filteredDatas = computed(() => {
-//   const keyword = search.value.toLowerCase()
-//   return Object.values(datas).filter(item => {
-//     const matchKeyword = item.name.toLowerCase().includes(keyword) || item.location.toLowerCase().includes(keyword)
-//     const matchCategory = selectedCategory.value === 'All' || item.category === selectedCategory.value
-//     return matchKeyword && matchCategory
-//   })
-// })
 
 const clickFilter = (category) => {
   selectedCategory.value = category

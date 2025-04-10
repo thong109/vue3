@@ -40,7 +40,7 @@
 </template>
 <script setup>
 import { reactive } from 'vue'
-import http from '@/helpers/http'
+import http from '@/helpers/axiosConfig'
 import router from '../router';
 
 const driverDetails = reactive({

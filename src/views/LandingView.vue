@@ -19,7 +19,7 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router'
-import http from '@/helpers/http'
+import http from '@/helpers/axiosConfig'
 
 const router = useRouter()
 const handleStartDriving = () => {

@@ -46,7 +46,6 @@ const datas = [
   { name: 'Creative Director', category: 'Design', detail: 'Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam lorem amet eget in netus laoreet', time: 'Full Time', location: 'San Francisco', id: 30 },
 ];
 
-
 const dataObj = Object.fromEntries(datas.map(item => [item.id, item]))
 provide('datas', dataObj)
 
